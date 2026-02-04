@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stopwatch Web Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .stopwatch-container {
+            background: #111;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .time {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .buttons button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .start { background: #28a745; color: white; }
+        .pause { background: #ffc107; color: black; }
+        .reset { background: #dc3545; color: white; }
+        .lap   { background: #17a2b8; color: white; }
+
+        .buttons button:hover {
+            opacity: 0.8;
+        }
+
+        .laps {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+            background: #1c1c1c;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .laps h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .laps ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .laps li {
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="stopwatch-container">
+    <h1>⏱️ Stopwatch</h1>
+    <div class="time" id="display">00:00:00</div>
+
+    <div class="buttons">
+        <button class="start" onclick="start()">Start</button>
+        <button class="pause" onclick="pause()">Pause</button>
+        <button class="reset" onclick="reset()">Reset</button>
+        <button class="lap" onclick="lap()">Lap</button>
+    </div>
+
+    <div class="laps">
+        <h3>Lap Times</h3>
+        <ul id="lapList"></ul>
+    </div>
+</div>
+
+<script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let lapCount = 0;
+
+    function timeToString(time) {
+        let totalSeconds = Math.floor(time / 1000);
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let seconds = totalSeconds % 60;
+
+        return (
+            String(hours).padStart(2, '0') + ":" +
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0')
+        );
+    }
+
+    function start() {
+        if (timerInterval) return;
+
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(function () {
+            elapsedTime = Date.now() - startTime;
+            document.getElementById("display").innerHTML = timeToString(elapsedTime);
+        }, 1000);
+    }
+
+    function pause() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function reset() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        elapsedTime = 0;
+        lapCount = 0;
+        document.getElementById("display").innerHTML = "00:00:00";
+        document.getElementById("lapList").innerHTML = "";
+    }
+
+    function lap() {
+        if (!timerInterval) return;
+
+        lapCount++;
+        let lapTime = timeToString(elapsedTime);
+        let li = document.createElement("li");
+        li.innerText = "Lap " + lapCount + ": " + lapTime;
+        document.getElementById("lapList").appendChild(li);
+    }
+</script>
+
+</body>
+</html>
